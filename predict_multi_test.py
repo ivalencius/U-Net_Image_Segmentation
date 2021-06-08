@@ -26,7 +26,7 @@ n_classes=4 #Number of classes for segmentation
 #Capture training image info as a list
 train_images = []
 
-for directory_path in glob.glob("128_patches/images/"):
+for directory_path in glob.glob("patches/images"):
     for img_path in glob.glob(os.path.join(directory_path, "*.tif")):
         img = cv2.imread(img_path, 0)       
         img = cv2.resize(img, (SIZE_Y, SIZE_X))
@@ -37,7 +37,7 @@ train_images = np.array(train_images)
 
 #Capture mask/label info as a list
 train_masks = [] 
-for directory_path in glob.glob("128_patches/masks/"):
+for directory_path in glob.glob("patches/masks"):
     for mask_path in glob.glob(os.path.join(directory_path, "*.tif")):
         mask = cv2.imread(mask_path, 0)       
         mask = cv2.resize(mask, (SIZE_Y, SIZE_X), interpolation = cv2.INTER_NEAREST)  #Otherwise ground truth changes due to interpolation
@@ -110,14 +110,14 @@ model.summary()
 history = model.fit(X_train, y_train_cat, 
                     batch_size = 16, 
                     verbose=1, 
-                    epochs=50, 
+                    epochs=3, 
                     validation_data=(X_test, y_test_cat), 
                     #class_weight=class_weights,
                     shuffle=False)
                     
 
 
-model.save('test.hdf5')
+model.save('sandstone_50_epochs_catXentropy_acc.hdf5')
 #model.save('sandstone_50_epochs_catXentropy_acc_with_weights.hdf5')
 ############################################################
 #Evaluate the model
@@ -139,8 +139,8 @@ plt.ylabel('Loss')
 plt.legend()
 plt.show()
 
-acc = history.history['acc']
-val_acc = history.history['val_acc']
+acc = history.history['accuracy']
+val_acc = history.history['val_accuracy']
 
 plt.plot(epochs, acc, 'y', label='Training Accuracy')
 plt.plot(epochs, val_acc, 'r', label='Validation Accuracy')
@@ -219,9 +219,9 @@ plt.show()
 
 from patchify import patchify, unpatchify
 
-large_image = cv2.imread('large_images/large_image.tif', 0)
+large_image = cv2.imread('sandstone_data_for_ML/full_labels_for_deep_learning/train_imgs_cropped_768.tif', 0)
 #This will split the image into small images of shape [3,3]
-patches = patchify(large_image, (128, 128), step=128)  #Step=256 for 256 patches means no overlap
+patches = patchify(large_image, (128,128), step=128)  #Step=256 for 256 patches means no overlap
 
 predicted_patches = []
 for i in range(patches.shape[0]):
