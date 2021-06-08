@@ -16,7 +16,7 @@ for img in range(large_image_stack.shape[0]):
 
     large_image = large_image_stack[img]
     
-    patches_img = patchify(large_image, (128, 128), step=128)  #Step=256 for 256 patches means no overlap
+    patches_img = patchify(large_image, (128, 128), step=256)  #Step=256 for 256 patches means no overlap
     
     for i in range(patches_img.shape[0]):
         for j in range(patches_img.shape[1]):
